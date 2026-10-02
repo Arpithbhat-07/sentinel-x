@@ -50,7 +50,15 @@ export class ExerciseWebSocket {
 
     let url: string;
     if (wsEnv && wsEnv.trim()) {
-      const cleanWs = wsEnv.trim().replace(/\/+$/, '');
+      let cleanWs = wsEnv.trim().replace(/\/+$/, '');
+      if (cleanWs.startsWith('http:')) {
+        cleanWs = cleanWs.replace(/^http:/, 'ws:');
+      } else if (cleanWs.startsWith('https:')) {
+        cleanWs = cleanWs.replace(/^https:/, 'wss:');
+      }
+      if (cleanWs.endsWith('/ws')) {
+        cleanWs = cleanWs.slice(0, -3);
+      }
       url = `${cleanWs}/ws/exercises/${encodeURIComponent(this.exerciseId)}?${queryParams}`;
     } else {
       const baseHttp = (
@@ -59,7 +67,7 @@ export class ExerciseWebSocket {
         'http://localhost:8000'
       ).trim().replace(/\/+$/, '');
       const wsProtocol = baseHttp.startsWith('https') ? 'wss:' : 'ws:';
-      const host = baseHttp.replace(/^https?:\/\//, '');
+      const host = baseHttp.replace(/^https?:\/\//, '').replace(/\/api$/, '').replace(/\/ws$/, '');
       url = `${wsProtocol}//${host}/ws/exercises/${encodeURIComponent(this.exerciseId)}?${queryParams}`;
     }
 

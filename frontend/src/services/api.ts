@@ -10,11 +10,13 @@ import {
   ExerciseLogItem
 } from '../types';
 
-const API_BASE = (
+const rawBase = (
   import.meta.env.VITE_API_URL ||
   import.meta.env.VITE_BACKEND_URL ||
   'http://localhost:8000'
-).replace(/\/+$/, '');
+).trim().replace(/\/+$/, '');
+
+const API_BASE = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase;
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}${endpoint}`;

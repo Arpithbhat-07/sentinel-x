@@ -12,7 +12,12 @@ export const Settings: React.FC = () => {
   const [wsHealth, setWsHealth] = useState<any>(null);
 
   useEffect(() => {
-    const base = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+    const rawBase = (
+      import.meta.env.VITE_API_URL ||
+      import.meta.env.VITE_BACKEND_URL ||
+      'http://localhost:8000'
+    ).trim().replace(/\/+$/, '');
+    const base = rawBase.endsWith('/api') ? rawBase.slice(0, -4) : rawBase;
     fetch(`${base}/health`)
       .then((res) => res.json())
       .then((data) => {
